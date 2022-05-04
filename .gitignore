@@ -1,0 +1,14 @@
+# Machine specific
+.venv
+.idea
+.mypy_cache
+.vscode
+
+# misc
+env
+htmlcov
+.DS_Store
+__pycache__
+*.egg-info
+*.pyc
+*__pycache__*
