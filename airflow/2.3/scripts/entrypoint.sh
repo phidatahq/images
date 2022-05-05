@@ -60,7 +60,7 @@ if [[ "$CREATE_AIRFLOW_TEST_USER" = true || "$CREATE_AIRFLOW_TEST_USER" = True ]
   AF_USER_PASSWORD=${AF_USER_PASSWORD:="admin"}
   AF_USER_FIRST_NAME=${AF_USER_FIRST_NAME:="admin"}
   AF_USER_LAST_NAME=${AF_USER_LAST_NAME:="admin"}
-  AF_USER_ROLE=${AF_USER_ROLE:="User"}
+  AF_USER_ROLE=${AF_USER_ROLE:="Admin"}
   AF_USER_EMAIL=${AF_USER_EMAIL:="admin@admin.com"}
   airflow users create \
     --username ${AF_USER_NAME} \
