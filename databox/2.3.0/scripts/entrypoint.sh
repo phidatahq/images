@@ -2,7 +2,7 @@
 
 ############################################################################
 #
-# Entrypoint script for the Airflow image
+# Entrypoint script for the Databox image
 # This script:
 #   - Waits for services to be available if needed
 #   - Installs libraries
@@ -19,15 +19,9 @@ fi
 # Wait for Services
 ############################################################################
 
-if [[ "$WAIT_FOR_DB" = true || "$WAIT_FOR_DB" = True ]]; then
+if [[ "$WAIT_FOR_AIRFLOW_DB" = true || "$WAIT_FOR_AIRFLOW_DB" = True ]]; then
   dockerize \
-    -wait tcp://$DB_HOST:$DB_PORT \
-    -timeout 300s
-fi
-
-if [[ "$WAIT_FOR_REDIS" = true || "$WAIT_FOR_REDIS" = True ]]; then
-  dockerize \
-    -wait tcp://$REDIS_HOST:$REDIS_PORT \
+    -wait tcp://$AIRFLOW_DB_HOST:$AIRFLOW_DB_PORT \
     -timeout 300s
 fi
 
@@ -43,6 +37,19 @@ if [[ "$INSTALL_REQUIREMENTS" = true || "$INSTALL_REQUIREMENTS" = True ]]; then
 fi
 
 ############################################################################
+# Install phidata dev
+############################################################################
+
+if [[ "$INSTALL_PHIDATA_DEV" = true || "$INSTALL_PHIDATA_DEV" = True ]]; then
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  echo "Installing phidata"
+  pip3 install --no-deps --editable $PHIDATA_DIR_PATH
+  echo "Sleeping for 5 seconds..."
+  sleep 5
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+############################################################################
 # Init database
 ############################################################################
 
@@ -52,7 +59,7 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
-if [[ "$CREATE_AIRFLOW_TEST_USER" = true || "$CREATE_AIRFLOW_TEST_USER" = True ]]; then
+if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Creating airflow user"
   # Use defaults if variables are not set.
@@ -72,43 +79,26 @@ if [[ "$CREATE_AIRFLOW_TEST_USER" = true || "$CREATE_AIRFLOW_TEST_USER" = True ]
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+if [[ "$INIT_AIRFLOW_SCHEDULER" = true || "$INIT_AIRFLOW_SCHEDULER" = True ]]; then
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  echo "Running: airflow scheduler --deamon"
+  airflow scheduler --daemon
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
 
 ############################################################################
-# Start the container
+# Start the databox
 ############################################################################
+
+if [[ "$INIT_AIRFLOW_WEBSERVER" = true || "$INIT_AIRFLOW_WEBSERVER" = True ]]; then
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  echo "Running: airflow webserver"
+  airflow webserver
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
 
 case "$1" in
   chill)
-    ;;
-  webserver)
-    exec airflow webserver
-    ;;
-  scheduler)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
-    exec airflow scheduler
-    ;;
-  worker)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
-    exec airflow celery "$@" -q "$QUEUE_NAME"
-    ;;
-  flower)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
-    exec airflow celery "$@"
     ;;
   *)
     exec "$@"
@@ -116,5 +106,5 @@ case "$1" in
 esac
 
 
-echo ">>> Welcome to Airflow!"
+echo ">>> Welcome to Databox!"
 while true; do sleep 18000; done

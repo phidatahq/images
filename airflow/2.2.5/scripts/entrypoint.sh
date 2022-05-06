@@ -52,7 +52,7 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
-if [[ "$CREATE_AIRFLOW_TEST_USER" = true || "$CREATE_AIRFLOW_TEST_USER" = True ]]; then
+if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Creating airflow user"
   # Use defaults if variables are not set.
