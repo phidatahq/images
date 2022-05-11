@@ -52,6 +52,20 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+############################################################################
+# Upgrade database
+############################################################################
+
+if [[ "$UPGRADE_AIRFLOW_DB" = true || "$UPGRADE_AIRFLOW_DB" = True ]]; then
+  echo "Upgrading Airflow DB"
+  airflow db upgrade
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+############################################################################
+# Create airflow admin user
+############################################################################
+
 if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Creating airflow user"
@@ -71,7 +85,6 @@ if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True
     --email ${AF_USER_EMAIL}
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
-
 
 ############################################################################
 # Start the container

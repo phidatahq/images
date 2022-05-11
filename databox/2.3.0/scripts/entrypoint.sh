@@ -59,6 +59,20 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+############################################################################
+# Upgrade database
+############################################################################
+
+if [[ "$UPGRADE_AIRFLOW_DB" = true || "$UPGRADE_AIRFLOW_DB" = True ]]; then
+  echo "Upgrading Airflow DB"
+  airflow db upgrade
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+############################################################################
+# Create airflow admin user
+############################################################################
+
 if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Creating airflow user"
@@ -79,16 +93,23 @@ if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+############################################################################
+# Run the required service
+############################################################################
+
+if [[ "$INIT_AIRFLOW_STANDALONE" = true || "$INIT_AIRFLOW_STANDALONE" = True ]]; then
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  echo "Running: airflow standalone"
+  airflow standalone
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
 if [[ "$INIT_AIRFLOW_SCHEDULER" = true || "$INIT_AIRFLOW_SCHEDULER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Running: airflow scheduler --deamon"
   airflow scheduler --daemon
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
-
-############################################################################
-# Start the databox
-############################################################################
 
 if [[ "$INIT_AIRFLOW_WEBSERVER" = true || "$INIT_AIRFLOW_WEBSERVER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -97,6 +118,10 @@ if [[ "$INIT_AIRFLOW_WEBSERVER" = true || "$INIT_AIRFLOW_WEBSERVER" = True ]]; t
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+############################################################################
+# Start the databox
+############################################################################
+
 case "$1" in
   chill)
     ;;
@@ -104,7 +129,6 @@ case "$1" in
     exec "$@"
     ;;
 esac
-
 
 echo ">>> Welcome to Databox!"
 while true; do sleep 18000; done
