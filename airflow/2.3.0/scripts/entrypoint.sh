@@ -52,6 +52,12 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+if [[ "$WAIT_FOR_DB_INIT" = true || "$WAIT_FOR_DB_INIT" = True ]]; then
+  echo "Waiting 10 seconds for airflow db to initialize"
+  sleep 10
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
 ############################################################################
 # Upgrade database
 ############################################################################
@@ -97,30 +103,24 @@ case "$1" in
     exec airflow webserver
     ;;
   scheduler)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "Waiting 10 seconds for db to be initialized"
+    sleep 10
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec airflow scheduler
     ;;
   worker)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "Waiting 10 seconds for db to be initialized"
+    sleep 10
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec airflow celery "$@" -q "$QUEUE_NAME"
     ;;
   flower)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+    echo "Waiting 10 seconds for db to be initialized"
+    sleep 10
+    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec airflow celery "$@"
     ;;
   *)
