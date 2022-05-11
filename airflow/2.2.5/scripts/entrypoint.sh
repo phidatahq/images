@@ -52,6 +52,26 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+if [[ "$WAIT_FOR_DB_INIT" = true || "$WAIT_FOR_DB_INIT" = True ]]; then
+  echo "Waiting 30 seconds for airflow db to initialize"
+  sleep 30
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+############################################################################
+# Upgrade database
+############################################################################
+
+if [[ "$UPGRADE_AIRFLOW_DB" = true || "$UPGRADE_AIRFLOW_DB" = True ]]; then
+  echo "Upgrading Airflow DB"
+  airflow db upgrade
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+############################################################################
+# Create airflow admin user
+############################################################################
+
 if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Creating airflow user"
@@ -72,7 +92,6 @@ if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
-
 ############################################################################
 # Start the container
 ############################################################################
@@ -84,30 +103,12 @@ case "$1" in
     exec airflow webserver
     ;;
   scheduler)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
     exec airflow scheduler
     ;;
   worker)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
     exec airflow celery "$@" -q "$QUEUE_NAME"
     ;;
   flower)
-    if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-      echo "Waiting 10 seconds for db to be initialized"
-      sleep 10
-      echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    fi
     exec airflow celery "$@"
     ;;
   *)

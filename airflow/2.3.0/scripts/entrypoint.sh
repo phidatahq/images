@@ -53,8 +53,8 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
 fi
 
 if [[ "$WAIT_FOR_DB_INIT" = true || "$WAIT_FOR_DB_INIT" = True ]]; then
-  echo "Waiting 10 seconds for airflow db to initialize"
-  sleep 10
+  echo "Waiting 30 seconds for airflow db to initialize"
+  sleep 30
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
@@ -103,24 +103,12 @@ case "$1" in
     exec airflow webserver
     ;;
   scheduler)
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "Waiting 10 seconds for db to be initialized"
-    sleep 10
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec airflow scheduler
     ;;
   worker)
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "Waiting 10 seconds for db to be initialized"
-    sleep 10
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec airflow celery "$@" -q "$QUEUE_NAME"
     ;;
   flower)
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-    echo "Waiting 10 seconds for db to be initialized"
-    sleep 10
-    echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec airflow celery "$@"
     ;;
   *)

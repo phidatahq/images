@@ -59,6 +59,20 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+############################################################################
+# Upgrade database
+############################################################################
+
+if [[ "$UPGRADE_AIRFLOW_DB" = true || "$UPGRADE_AIRFLOW_DB" = True ]]; then
+  echo "Upgrading Airflow DB"
+  airflow db upgrade
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+############################################################################
+# Create airflow admin user
+############################################################################
+
 if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Creating airflow user"
@@ -79,6 +93,10 @@ if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
+############################################################################
+# Run the required service
+############################################################################
+
 if [[ "$INIT_AIRFLOW_SCHEDULER" = true || "$INIT_AIRFLOW_SCHEDULER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
   echo "Running: airflow scheduler --deamon"
@@ -86,9 +104,12 @@ if [[ "$INIT_AIRFLOW_SCHEDULER" = true || "$INIT_AIRFLOW_SCHEDULER" = True ]]; t
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
-############################################################################
-# Start the databox
-############################################################################
+if [[ "$INIT_AIRFLOW_WEBSERVER" = true || "$INIT_AIRFLOW_WEBSERVER" = True ]]; then
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+  echo "Running: airflow webserver"
+  airflow webserver
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
 
 if [[ "$INIT_AIRFLOW_WEBSERVER" = true || "$INIT_AIRFLOW_WEBSERVER" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -96,6 +117,10 @@ if [[ "$INIT_AIRFLOW_WEBSERVER" = true || "$INIT_AIRFLOW_WEBSERVER" = True ]]; t
   airflow webserver
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
+
+############################################################################
+# Start the databox
+############################################################################
 
 case "$1" in
   chill)
