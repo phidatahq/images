@@ -2,6 +2,7 @@
 # Load zsh theme
 export ZSH=/root/.oh-my-zsh
 ZSH_THEME="phi"
+ZSH_AUTOSUGGEST_HIGHLIGHT_STYLE="fg=#b8a2ff"
 
 # Uncomment the following line to display red dots whilst waiting for completion.
 COMPLETION_WAITING_DOTS="true"

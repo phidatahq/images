@@ -53,8 +53,8 @@ if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
 fi
 
 if [[ "$WAIT_FOR_DB_INIT" = true || "$WAIT_FOR_DB_INIT" = True ]]; then
-  echo "Waiting 30 seconds for airflow db to initialize"
-  sleep 30
+  echo "Waiting 60 seconds for airflow db to initialize"
+  sleep 60
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
