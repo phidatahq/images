@@ -63,6 +63,6 @@ RUN apt-get autoremove -y --purge \
 COPY scripts /
 
 EXPOSE 8080 5555
-WORKDIR ${USER_LOCAL_DIR}
+WORKDIR ${HOME_DIR}
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["chill"]

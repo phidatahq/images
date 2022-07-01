@@ -43,7 +43,7 @@ ENV PYTHON_VERSION_ARG=${PYTHON_VERSION_ARG}
 ARG CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints-${AIRFLOW_VERSION}/constraints-${PYTHON_VERSION_ARG}.txt"
 # Example: https://raw.githubusercontent.com/apache/airflow/constraints-2.2.4/constraints-3.9.txt
 # Details: https://airflow.apache.org/docs/apache-airflow/stable/installation/installing-from-pypi.html#constraints-files
-ARG AIRFLOW_EXTRAS="celery,redis,postgres,slack,crypto"
+ARG AIRFLOW_EXTRAS="celery,redis,postgres,slack,crypto,google_auth"
 ENV AIRFLOW_EXTRAS=${AIRFLOW_EXTRAS}
 RUN pip install -U "apache-airflow[${AIRFLOW_EXTRAS}]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 
@@ -61,6 +61,7 @@ RUN apt-get autoremove -y --purge \
 COPY scripts /
 
 EXPOSE 8080 5555
-WORKDIR ${HOME_DIR}
+WORKDIR ${USER_LOCAL_DIR}
+
 ENTRYPOINT ["/entrypoint.sh"]
 CMD ["chill"]
