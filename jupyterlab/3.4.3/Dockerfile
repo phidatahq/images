@@ -1,18 +1,17 @@
 FROM phidata/python:3.9.12
 LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
 
-# Create user and home dir
-ARG USER=databox
+ARG USER_LOCAL_DIR=/usr/local
+ARG BIN_DIR=${USER_LOCAL_DIR}/bin
+
+# Define dirs
+ARG USER=jupyter
 ARG USER_LOCAL_DIR=/usr/local
 ARG HOME_DIR=${USER_LOCAL_DIR}/${USER}
-RUN groupadd -g 61000 ${USER} \
-  && useradd -g 61000 -u 61000 -ms /bin/bash -d ${HOME_DIR} ${USER}
-
-# Create airflow dir
 ARG AIRFLOW_HOME=${USER_LOCAL_DIR}/airflow
 ENV AIRFLOW_HOME=${AIRFLOW_HOME}
-RUN mkdir -p ${AIRFLOW_HOME}
-RUN chown -R ${USER}:${USER} ${AIRFLOW_HOME}
+RUN groupadd -g 61000 ${USER} \
+  && useradd -g 61000 -u 61000 -ms /bin/bash -d ${HOME_DIR} ${USER}
 
 # Install base libraries
 ENV DEBIAN_FRONTEND=noninteractive
@@ -32,10 +31,13 @@ RUN set -x \
   unixodbc ' \
   && apt-get update \
   && apt-get -y install \
+  nodejs \
+  npm \
+  yarn \
   postgresql-client \
   $airflowBuildDeps \
   # Needed for airflow: https://airflow.apache.org/docs/apache-airflow/stable/installation.html#installation-tools
-  && pip install -U pip pip-tools setuptools wheel
+  && pip install -U pip pip-tools setuptools wheel fsspec
 
 # Install airflow
 ARG AIRFLOW_VERSION=2.3.2
@@ -49,6 +51,16 @@ ARG AIRFLOW_EXTRAS="celery,redis,postgres,slack,crypto,google_auth"
 ENV AIRFLOW_EXTRAS=${AIRFLOW_EXTRAS}
 RUN pip install -U "apache-airflow[${AIRFLOW_EXTRAS}]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 
+# Install jupyterlab
+ARG JUPYTERLAB_VERSION=3.4.3
+ENV JUPYTERLAB_VERSION=${JUPYTERLAB_VERSION}
+RUN pip install jupyterlab==${JUPYTERLAB_VERSION}
+
+# Install jupyter notebooks
+ARG NOTEBOOK_VERSION=6.4.12
+ENV NOTEBOOK_VERSION=${NOTEBOOK_VERSION}
+RUN pip install notebook==${NOTEBOOK_VERSION}
+
 # Clean
 RUN apt-get autoremove -y --purge \
   && apt-get clean \
@@ -60,9 +72,27 @@ RUN apt-get autoremove -y --purge \
   /usr/share/doc \
   /usr/share/doc-base
 
-COPY scripts /
+# Create additional directories
+ARG TMP_DIR=/tmp
+ARG MNT_DIR=/mnt
+ARG SCRIPTS_DIR=/scripts
+ARG NOTEBOOKS_DIR=${MNT_DIR}/notebooks
+ARG WORKSPACES_DIR=/workspaces
 
-EXPOSE 8080 5555
-WORKDIR ${HOME_DIR}
-ENTRYPOINT ["/entrypoint.sh"]
+RUN mkdir -p ${TMP_DIR}
+RUN mkdir -p ${MNT_DIR}
+RUN mkdir -p ${SCRIPTS_DIR}
+RUN mkdir -p ${NOTEBOOKS_DIR}
+RUN mkdir -p ${WORKSPACES_DIR}
+
+ENV TMP_DIR=${TMP_DIR}
+ENV MNT_DIR=${MNT_DIR}
+ENV SCRIPTS_DIR=${SCRIPTS_DIR}
+ENV NOTEBOOKS_DIR=${NOTEBOOKS_DIR}
+ENV WORKSPACES_DIR=${WORKSPACES_DIR}
+
+COPY scripts ${SCRIPTS_DIR}
+WORKDIR /
+
+ENTRYPOINT ["/scripts/entrypoint.sh"]
 CMD ["chill"]

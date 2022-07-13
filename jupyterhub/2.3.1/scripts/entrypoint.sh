@@ -2,10 +2,10 @@
 
 ############################################################################
 #
-# Entrypoint script for the Databox image
+# Entrypoint script for the JupyterLab image
 # This script:
-#   - Waits for services to be available if needed
 #   - Installs libraries
+#   - Starts the appropriate service
 #
 ############################################################################
 
@@ -30,13 +30,20 @@ fi
 # Start the service
 ############################################################################
 
+echo "User: $(whoami)"
+
 case "$1" in
   chill)
     ;;
+  hub)
+    echo "Running: jupyterhub"
+    jupyterhub
+    ;;
   *)
+    echo "Running: $@"
     exec "$@"
     ;;
 esac
 
-echo ">>> Welcome to Jupyter!"
+echo ">>> Welcome to JupyterHub!"
 while true; do sleep 18000; done

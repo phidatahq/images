@@ -3,13 +3,27 @@ LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
 
 # Create user and home dir
 ARG USER=airflow
+ARG TMP_DIR=/tmp
+ARG MNT_DIR=/mnt
+ARG SCRIPTS_DIR=/scripts
 ARG USER_LOCAL_DIR=/usr/local
+ARG BIN_DIR=${USER_LOCAL_DIR}/bin
 ARG HOME_DIR=${USER_LOCAL_DIR}/${USER}
+ARG AIRFLOW_HOME=${HOME_DIR}
+
 RUN groupadd -g 61000 ${USER} \
   && useradd -g 61000 -u 61000 -ms /bin/bash -d ${HOME_DIR} ${USER}
 
-# Create airflow dir
-ARG AIRFLOW_HOME=${HOME_DIR}
+RUN mkdir -p ${TMP_DIR}
+RUN mkdir -p ${MNT_DIR}
+RUN mkdir -p ${SCRIPTS_DIR}
+
+ENV TMP_DIR=${TMP_DIR}
+ENV MNT_DIR=${MNT_DIR}
+ENV SCRIPTS_DIR=${SCRIPTS_DIR}
+ENV USER_LOCAL_DIR=${USER_LOCAL_DIR}
+ENV BIN_DIR=${BIN_DIR}
+ENV HOME_DIR=${HOME_DIR}
 ENV AIRFLOW_HOME=${AIRFLOW_HOME}
 
 # Install base libraries
@@ -47,6 +61,17 @@ ARG AIRFLOW_EXTRAS="celery,redis,postgres,slack,crypto,google_auth"
 ENV AIRFLOW_EXTRAS=${AIRFLOW_EXTRAS}
 RUN pip install -U "apache-airflow[${AIRFLOW_EXTRAS}]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
 
+# Install java
+ARG CORETTO_TAR=amazon-corretto-11-x64-linux-jdk.tar.gz
+ARG CORETTO_URL=https://corretto.aws/downloads/latest/${CORETTO_TAR}
+
+RUN wget ${CORETTO_URL} -O ${TMP_DIR}/${CORETTO_TAR} --progress=bar:force \
+  && tar -xzvf ${TMP_DIR}/${CORETTO_TAR} -C ${BIN_DIR} \
+  && rm ${TMP_DIR}/${CORETTO_TAR}
+
+ENV PATH=${PATH}:${BIN_DIR}/amazon-corretto-11.0.15.9.1-linux-x64/bin
+ENV JAVA_HOME=${BIN_DIR}/amazon-corretto-11.0.15.9.1-linux-x64
+
 # Clean
 RUN apt-get autoremove -y --purge \
   && apt-get clean \
@@ -59,9 +84,10 @@ RUN apt-get autoremove -y --purge \
   /usr/share/doc-base
 
 COPY scripts /
+COPY scripts ${SCRIPTS_DIR}
 
 EXPOSE 8080 5555
 WORKDIR ${USER_LOCAL_DIR}
 
-ENTRYPOINT ["/entrypoint.sh"]
+ENTRYPOINT ["/scripts/entrypoint.sh"]
 CMD ["chill"]
