@@ -1,4 +1,4 @@
-FROM apache/superset:2.0.0rc2
+FROM apache/superset:2.0.0
 LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
 
 USER root
