@@ -11,11 +11,6 @@ RUN groupadd -g 61001 ${USER} \
 # Give jupyter user permissions to AIRFLOW_HOME
 RUN chown -R ${USER}:${USER} ${AIRFLOW_HOME}
 
-# Create notebooks mount
-ARG NOTEBOOKS_DIR=${MNT_DIR}/notebooks
-ENV NOTEBOOKS_DIR=${NOTEBOOKS_DIR}
-RUN mkdir -p ${NOTEBOOKS_DIR}
-
 # Install base libraries
 ENV DEBIAN_FRONTEND=noninteractive
 RUN set -x \
@@ -27,7 +22,7 @@ RUN set -x \
   && pip install -U pip pip-tools setuptools wheel fsspec
 
 # Install jupyterlab
-ARG JUPYTERLAB_VERSION=3.4.3
+ARG JUPYTERLAB_VERSION=3.4.8
 ENV JUPYTERLAB_VERSION=${JUPYTERLAB_VERSION}
 RUN pip install jupyterlab==${JUPYTERLAB_VERSION}
 

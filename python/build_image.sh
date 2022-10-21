@@ -7,6 +7,10 @@ REPO="phidata"
 NAME="python"
 TAG="3.9.12"
 
-echo "Running: docker build -t $REPO/$NAME:$TAG $CURR_SCRIPT_DIR"
-docker build -t $REPO/$NAME:$TAG $CURR_SCRIPT_DIR
-docker push $REPO/$NAME:$TAG
+# echo "Running: docker build -t $REPO/$NAME:$TAG $CURR_SCRIPT_DIR"
+# docker build -t $REPO/$NAME:$TAG $CURR_SCRIPT_DIR
+# docker push $REPO/$NAME:$TAG
+
+# Run docker buildx create --use before running this script
+echo "Running: docker buildx build --platform=linux/amd64,linux/arm64,linux/arm/v8 -t $REPO/$NAME:$TAG $CURR_SCRIPT_DIR"
+docker buildx build --platform=linux/amd64,linux/arm64,linux/arm/v8 -t $REPO/$NAME:$TAG $CURR_SCRIPT_DIR --push
