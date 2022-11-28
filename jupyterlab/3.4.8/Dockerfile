@@ -1,4 +1,4 @@
-FROM phidata/airflow:2.4.0
+FROM phidata/airflow:2.4.2
 LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
 
 # Create user and home dir

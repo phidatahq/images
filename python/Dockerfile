@@ -22,6 +22,9 @@ RUN set -x \
   && apt-get update \
   && apt-get install -y \
   apt-utils \
+  bzip2 \
+  ca-certificates \
+  curl \
   git \
   gnupg \
   netcat \
