@@ -62,6 +62,8 @@ RUN set -x && \
   --root-prefix="${CONDA_DIR}" \
   --prefix="${CONDA_DIR}" \
   --yes \
+  # Pin python version to 3.9 because 3.11 fails on many packages
+  'python=3.9' \
   'mamba' \
   'jupyter_core' && \
   rm micromamba && \
