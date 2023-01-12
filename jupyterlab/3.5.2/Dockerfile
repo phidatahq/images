@@ -96,7 +96,7 @@ RUN mamba install --quiet --yes \
   mamba clean --all -f -y
 
 # Install jupyterlab
-ARG JUPYTERLAB_VERSION=3.4.8
+ARG JUPYTERLAB_VERSION=3.5.2
 ENV JUPYTERLAB_VERSION=${JUPYTERLAB_VERSION}
 RUN pip install jupyterlab==${JUPYTERLAB_VERSION}
 
