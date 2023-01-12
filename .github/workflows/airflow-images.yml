@@ -25,8 +25,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: .
-          file: airflow/2.5.0/Dockerfile
+          context: airflow/2.5.0
+          file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_REPO }}/airflow:2.5.0
