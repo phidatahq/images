@@ -4,7 +4,7 @@ set -e
 
 CURR_SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" && pwd )"
 REPO="phidata"
-NAME="airflow"
+NAME="databox"
 TAG="2.5.0"
 
 # Run docker buildx create --use before running this script
