@@ -72,7 +72,7 @@ RUN apt-get autoremove -y --purge \
 COPY scripts ${SCRIPTS_DIR}
 
 EXPOSE 8080 5555
-WORKDIR /
+WORKDIR ${AIRFLOW_HOME}
 
 ENTRYPOINT ["/scripts/entrypoint.sh"]
 CMD ["chill"]

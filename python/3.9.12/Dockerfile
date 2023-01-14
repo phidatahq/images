@@ -22,7 +22,6 @@ RUN set -x \
   && apt-get update \
   && apt-get install -y \
   apt-utils \
-  build-essential \
   bzip2 \
   ca-certificates \
   curl \
@@ -30,13 +29,11 @@ RUN set -x \
   gcc \
   gnupg \
   netcat \
-  python3-dev \
   rsync \
   ssh \
   vim \
   wget \
   libevent-dev \
-  libpq-dev \
   zsh \
   && pip install -U pip setuptools wheel pip-tools
 

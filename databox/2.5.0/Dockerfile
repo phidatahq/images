@@ -13,6 +13,6 @@ RUN groupadd -g 61001 ${USER} \
 
 COPY scripts ${SCRIPTS_DIR}
 
-WORKDIR /
+WORKDIR ${HOME_DIR}
 ENTRYPOINT ["/scripts/entrypoint.sh"]
 CMD ["chill"]

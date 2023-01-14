@@ -124,4 +124,3 @@ WORKDIR /
 
 ENTRYPOINT ["/scripts/entrypoint.sh"]
 CMD ["chill"]
-
