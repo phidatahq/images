@@ -57,7 +57,8 @@ case "$1" in
     exec spark-class org.apache.spark.deploy.master.Master \
       --host $SPARK_DRIVER_HOST \
       --port $SPARK_DRIVER_PORT \
-      --webui-port $SPARK_WEBUI_PORT >> $SPARK_DRIVER_LOG
+      --webui-port $SPARK_WEBUI_PORT \
+      ${@:2} >> $SPARK_DRIVER_LOG
     ;;
   worker)
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
@@ -69,6 +70,7 @@ case "$1" in
     echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
     exec spark-class org.apache.spark.deploy.worker.Worker \
       --webui-port $SPARK_WEBUI_PORT \
+      ${@:2} \
       $SPARK_DRIVER_URL >> $SPARK_WORKER_LOG
     ;;
   *)
