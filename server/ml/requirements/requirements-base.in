@@ -1,0 +1,28 @@
+# Formatting
+black
+# Type checking
+mypy
+# Pre-commit hooks
+pre-commit
+# Testing
+pytest
+# Linting
+ruff
+# Phidata pinned to image version
+phidata==1.4.1
+# Base libraries for ML Apps
+polars
+pandas
+numpy
+scikit-learn
+seaborn
+statsmodels
+streamlit
+# Base libraries for Api Server
+fastapi
+typer
+uvicorn
+# Libraries for Postgres
+alembic
+psycopg2-binary
+sqlalchemy

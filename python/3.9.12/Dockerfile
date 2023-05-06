@@ -23,6 +23,7 @@ RUN set -x \
   && apt-get install -y \
   apt-utils \
   bzip2 \
+  build-essential \
   ca-certificates \
   curl \
   git \
