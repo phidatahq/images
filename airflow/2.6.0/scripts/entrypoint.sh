@@ -2,8 +2,10 @@
 
 ############################################################################
 #
-# Manager script for the Airflow image
-# This script helps execute admin tasks like creating a user, upgrading db etc
+# Entrypoint script for the Airflow image
+# This script:
+#   - Waits for services to be available if needed
+#   - Installs libraries
 #
 ############################################################################
 
@@ -35,8 +37,12 @@ fi
 
 if [[ "$INSTALL_REQUIREMENTS" = true || "$INSTALL_REQUIREMENTS" = True ]]; then
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
-  echo "Installing requirements from $REQUIREMENTS_FILE_PATH"
-  pip3 install -r $REQUIREMENTS_FILE_PATH
+  if [ -f "$REQUIREMENTS_FILE_PATH" ]; then
+    echo "Installing requirements from $REQUIREMENTS_FILE_PATH"
+    pip install -r $REQUIREMENTS_FILE_PATH
+  else
+    echo "$REQUIREMENTS_FILE_PATH unavailable"
+  fi
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
@@ -47,6 +53,12 @@ fi
 if [[ "$INIT_AIRFLOW_DB" = true || "$INIT_AIRFLOW_DB" = True ]]; then
   echo "Initializing Airflow DB"
   airflow db init
+  echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
+fi
+
+if [[ "$WAIT_FOR_DB_INIT" = true || "$WAIT_FOR_DB_INIT" = True ]]; then
+  echo "Waiting 60 seconds for airflow db to initialize"
+  sleep 60
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
@@ -84,5 +96,30 @@ if [[ "$CREATE_AIRFLOW_ADMIN_USER" = true || "$CREATE_AIRFLOW_ADMIN_USER" = True
   echo "++++++++++++++++++++++++++++++++++++++++++++++++++++++++"
 fi
 
-echo ">>> Welcome to Airflow Manager!"
+############################################################################
+# Start the container
+############################################################################
+
+case "$1" in
+  chill)
+    ;;
+  webserver)
+    exec airflow webserver
+    ;;
+  scheduler)
+    exec airflow scheduler
+    ;;
+  worker)
+    exec airflow celery "$@" -q "$QUEUE_NAME"
+    ;;
+  flower)
+    exec airflow celery "$@"
+    ;;
+  *)
+    exec "$@"
+    ;;
+esac
+
+
+echo ">>> Welcome to Airflow!"
 while true; do sleep 18000; done

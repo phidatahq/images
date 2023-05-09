@@ -9,16 +9,8 @@ ARG AIRFLOW_HOME=${HOME_DIR}
 RUN groupadd -g 61000 ${USER} \
   && useradd -g 61000 -u 61000 -ms /bin/bash -d ${HOME_DIR} ${USER}
 
-# Create CONDA_DIR and give jupyter user permissions
-ARG CONDA_DIR=/opt/conda
-ENV CONDA_DIR=${CONDA_DIR}
-RUN mkdir -p ${CONDA_DIR}
-RUN chown -R ${USER}:${USER} ${CONDA_DIR}
-
 ENV HOME_DIR=${HOME_DIR}
 ENV AIRFLOW_HOME=${AIRFLOW_HOME}
-# Add CONDA_DIR to PATH
-ENV PATH=${CONDA_DIR}/bin:${PATH}
 
 # Install base libraries
 ENV DEBIAN_FRONTEND=noninteractive
@@ -39,15 +31,12 @@ RUN set -x \
   && apt-get update \
   && apt-get install -y \
   postgresql-client \
-  unixodbc \
-  unixodbc-dev \
   $airflowBuildDeps \
-  r-cran-rodbc \
   # Needed for airflow: https://airflow.apache.org/docs/apache-airflow/stable/installation.html#installation-tools
   && pip install -U pip pip-tools setuptools wheel
 
 # Install airflow
-ARG AIRFLOW_VERSION=2.5.3
+ARG AIRFLOW_VERSION=2.6.0
 ENV AIRFLOW_VERSION=${AIRFLOW_VERSION}
 ARG PYTHON_VERSION_ARG=3.9
 ENV PYTHON_VERSION_ARG=${PYTHON_VERSION_ARG}
@@ -57,63 +46,6 @@ ARG CONSTRAINT_URL="https://raw.githubusercontent.com/apache/airflow/constraints
 ARG AIRFLOW_EXTRAS="celery,redis,google_auth"
 ENV AIRFLOW_EXTRAS=${AIRFLOW_EXTRAS}
 RUN pip install -U "apache-airflow[${AIRFLOW_EXTRAS}]==${AIRFLOW_VERSION}" --constraint "${CONSTRAINT_URL}"
-
-# Copy .condarc
-COPY .condarc ${CONDA_DIR}
-
-# Download and install micromamba.
-# Then use micromamba to install mamba.
-WORKDIR /tmp
-RUN set -x && \
-  # Get arch
-  arch=$(uname -m) && \
-  if [ "${arch}" = "aarch64" ]; then \
-  arch="aarch64"; \
-  elif [ "${arch}" = "ppc64le" ]; then \
-  arch="ppc64le"; \
-  else arch="64"; \
-  fi && \
-  # Get micromamba
-  wget -qO /tmp/micromamba.tar.bz2 \
-  "https://micromamba.snakepit.net/api/micromamba/linux-${arch}/latest" && \
-  tar -xvjf /tmp/micromamba.tar.bz2 --strip-components=1 bin/micromamba && \
-  rm /tmp/micromamba.tar.bz2 && \
-  # Install the packages
-  ./micromamba install \
-  --root-prefix="${CONDA_DIR}" \
-  --prefix="${CONDA_DIR}" \
-  --yes \
-  # Pin python version to 3.9 because 3.11 fails on many packages
-  'python=3.9' \
-  'mamba' && \
-  rm micromamba && \
-  # Pin major.minor version of python
-  # mamba list python | grep '^python ' | tr -s ' ' | cut -d ' ' -f 1,2 >> "${CONDA_DIR}/conda-meta/pinned" && \
-  mamba clean --all -f -y
-
-# Install R packages including IRKernel
-# r-e1071: dependency of the caret R package
-RUN mamba install --quiet --yes \
-  'r-base' \
-  'r-caret' \
-  'r-crayon' \
-  'r-devtools' \
-  'r-e1071' \
-  'r-forecast' \
-  'r-hexbin' \
-  'r-htmltools' \
-  'r-htmlwidgets' \
-  'r-irkernel' \
-  'r-nycflights13' \
-  'r-randomforest' \
-  'r-rcurl' \
-  'r-rmarkdown' \
-  'r-rodbc' \
-  'r-rsqlite' \
-  'r-shiny' \
-  'r-tidyverse' \
-  'unixodbc' && \
-  mamba clean --all -f -y
 
 # Clean
 RUN apt-get autoremove -y --purge \
