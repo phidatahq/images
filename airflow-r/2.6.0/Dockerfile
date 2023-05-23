@@ -31,6 +31,9 @@ RUN set -x \
   unixodbc \
   unixodbc-dev \
   libglpk-dev \
+  libssl-dev \
+  libxml2-dev \
+  libcurl4-openssl-dev \
   yarn \
   && pip install -U pip pip-tools setuptools wheel fsspec
 
@@ -45,6 +48,11 @@ ENV NOTEBOOK_VERSION=${NOTEBOOK_VERSION}
 RUN pip install notebook==${NOTEBOOK_VERSION}
 
 # Install R libraries
+RUN R -e "install.packages('curl', dependencies = TRUE)"
+RUN R -e "install.packages('httr', dependencies = TRUE)"
+RUN R -e "install.packages('xml2', dependencies = TRUE)"
+RUN R -e "install.packages('aws.s3', repos = c('cloudyr' = 'http://cloudyr.github.io/drat'))"
+RUN R -e "install.packages('odbc', dependencies = TRUE)"
 RUN R -e "install.packages('devtools', dependencies = TRUE)"
 RUN R -e "install.packages('e1071', dependencies = TRUE)"
 RUN R -e "install.packages('forecast', dependencies = TRUE)"
@@ -57,5 +65,6 @@ RUN R -e "install.packages('rodbc', dependencies = TRUE)"
 RUN R -e "install.packages('rsqlite', dependencies = TRUE)"
 RUN R -e "install.packages('shiny', dependencies = TRUE)"
 RUN R -e "install.packages('Rglpk', dependencies = TRUE)"
+RUN R -e "install.packages('aws.s3', dependencies = TRUE)"
 
 RUN R -e "IRkernel::installspec(user = FALSE)"
