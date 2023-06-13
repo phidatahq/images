@@ -1,0 +1,5 @@
+fastapi~=0.96
+typer
+uvicorn[standard]
+sqlalchemy
+alembic
