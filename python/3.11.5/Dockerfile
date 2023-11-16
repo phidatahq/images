@@ -1,7 +1,5 @@
-FROM apache/superset:2.0.1-dev
+FROM python:3.11.5-slim
 LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
-
-USER root
 
 ARG TMP_DIR=/tmp
 ARG MNT_DIR=/mnt
@@ -20,16 +18,25 @@ RUN mkdir -p ${MNT_DIR}
 RUN mkdir -p ${SCRIPTS_DIR}
 
 # Install base libraries
-ENV DEBIAN_FRONTEND=noninteractive
 RUN set -x \
   && apt-get update \
   && apt-get install -y \
   apt-utils \
+  bzip2 \
+  build-essential \
+  ca-certificates \
+  curl \
+  cmake \
   git \
+  gcc \
+  gnupg \
+  rsync \
   ssh \
   vim \
-  netcat \
-  wget
+  wget \
+  libevent-dev \
+  zsh \
+  && pip install -U pip setuptools wheel pip-tools
 
 # Install dockerize
 ARG DOCKERIZE_VERSION=v0.6.1
@@ -39,6 +46,20 @@ ARG DOCKERIZE_URL=https://github.com/jwilder/dockerize/releases/download/${DOCKE
 RUN wget ${DOCKERIZE_URL} -O ${TMP_DIR}/${DOCKERIZE_TAR} --progress=bar:force \
   && tar -xzvf ${TMP_DIR}/${DOCKERIZE_TAR} -C ${BIN_DIR} \
   && rm ${TMP_DIR}/${DOCKERIZE_TAR}
+
+# Install oh_my_zsh
+ARG OH_MY_ZSH_SCRIPT=zsh_install.sh
+ARG OH_MY_ZSH_URL=https://raw.githubusercontent.com/ohmyzsh/ohmyzsh/master/tools/install.sh
+RUN wget ${OH_MY_ZSH_URL} -O ${TMP_DIR}/${OH_MY_ZSH_SCRIPT} --progress=bar:force \
+  && sh ${TMP_DIR}/${OH_MY_ZSH_SCRIPT} \
+  && rm ${TMP_DIR}/${OH_MY_ZSH_SCRIPT}
+# zsh plugins
+RUN git clone https://github.com/zsh-users/zsh-syntax-highlighting.git ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-syntax-highlighting
+RUN git clone https://github.com/zsh-users/zsh-autosuggestions ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/plugins/zsh-autosuggestions
+# zsh theme
+COPY dotfiles/phi.zsh-theme ${ZSH_CUSTOM:-/root/.oh-my-zsh/custom}/themes/phi.zsh-theme
+# add zshrc
+COPY dotfiles/.zshrc /root
 
 # Clean
 RUN apt-get autoremove -y --purge \
@@ -51,8 +72,5 @@ RUN apt-get autoremove -y --purge \
   /usr/share/doc \
   /usr/share/doc-base
 
-COPY scripts ${SCRIPTS_DIR}
 WORKDIR /
-
-ENTRYPOINT ["/scripts/entrypoint.sh"]
-CMD ["chill"]
+CMD ["zsh"]
