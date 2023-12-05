@@ -33,5 +33,7 @@ RUN rm -rf duckdb
 RUN apt-get clean \
     && rm -rf /var/lib/apt/lists/*
 
+RUN ["python", "-c", "import duckdb;print(duckdb.sql('select count(*) from read_csv_auto(\"https://raw.githubusercontent.com/duckdb/duckdb/main/data/csv/aws_locations.csv\")'))"]
+
 WORKDIR /
 CMD ["zsh"]
