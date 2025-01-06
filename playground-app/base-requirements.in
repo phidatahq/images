@@ -1,0 +1,16 @@
+alembic
+duckduckgo-search
+fastapi[standard]
+mypy
+nest_asyncio
+openai
+pgvector
+phidata[aws]==2.5.30
+psycopg[binary]
+pypdf
+pytest
+python-docx
+ruff
+sqlalchemy
+tiktoken
+typer

@@ -1,6 +1,0 @@
-# Dataframe libraries
-polars
-# Sql libraries
-sqlmodel
-# Postgres libraries
-psycopg2-binary

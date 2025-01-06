@@ -1,0 +1,15 @@
+FROM phidata/playground-app:latest
+
+# Copy requirements
+COPY app/requirements.txt ./
+
+# Install dependencies
+RUN uv pip install -r ./requirements.txt
+
+# Copy application files
+COPY app/* ./
+
+ENTRYPOINT ["/scripts/entrypoint.sh"]
+CMD ["chill"]
+
+# Test using: docker buildx build . -f TestDockerfile
