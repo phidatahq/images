@@ -26,7 +26,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: python
-          file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ vars.DOCKERHUB_NAMESPACE }}/python:3.9.12

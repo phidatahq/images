@@ -26,7 +26,6 @@ jobs:
         uses: docker/build-push-action@v3
         with:
           context: jupyterlab/3.4.8
-          file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
           tags: ${{ secrets.DOCKERHUB_REPO }}/jupyterlab:3.4.8
