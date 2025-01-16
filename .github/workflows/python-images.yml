@@ -22,10 +22,20 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
-        uses: docker/build-push-action@v3
-        with:
-          context: python/3.12
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ vars.DOCKERHUB_NAMESPACE }}/python:3.12
+      - name: Discover and Build Images
+        run: |
+          cd python
+          for dir in */; do
+            # Extract Python version from the directory name
+            version=${dir%/}
+
+            echo "Building and pushing image for Python $version"
+
+            # Build and push the Docker image for this version
+            docker buildx build \
+              --platform linux/amd64,linux/arm64 \
+              --push \
+              --tag ${{ vars.DOCKERHUB_NAMESPACE }}/python:$version \
+              --file "$dir/Dockerfile" \
+              "$dir"
+          done
