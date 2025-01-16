@@ -1,4 +1,4 @@
-name: Build Python Images
+name: Build PG Vector Images
 
 on: workflow_dispatch
 
@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  build-python-3-9-12:
+  build-pg-vector-16:
 
     runs-on: ubuntu-latest
 
@@ -25,8 +25,8 @@ jobs:
       - name: Build and push
         uses: docker/build-push-action@v3
         with:
-          context: python
+          context: pgvector/16/
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKERHUB_NAMESPACE }}/python:3.9.12
+          tags: ${{ vars.DOCKERHUB_NAMESPACE }}/pgvector:16
