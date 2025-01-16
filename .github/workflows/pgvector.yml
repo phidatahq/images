@@ -39,4 +39,3 @@ jobs:
                 --file "$dir/Dockerfile" \
                 "$dir"
             done
-        uses: docker/build-push-action@v6
