@@ -4,8 +4,6 @@ __pycache__
 .git
 build
 coverage
-Dockerfile.dev
-Dockerfile.prod
 env
 htmlcov
 migrations
