@@ -1,4 +1,4 @@
-name: Build Python Images
+name: Build FastAPI Images
 
 on: workflow_dispatch
 
@@ -6,12 +6,12 @@ permissions:
   contents: read
 
 jobs:
-  build-python-3-12:
+  build-fastapi-app:
 
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout
+      - name: Checkout Repository
         uses: actions/checkout@v3
       - name: Set up QEMU
         uses: docker/setup-qemu-action@v2
@@ -22,11 +22,11 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
+      - name: Build and Push FastAPI Image
         uses: docker/build-push-action@v3
         with:
-          context: python/3.12
+          context: fastapi/0.104
           file: Dockerfile
           platforms: linux/amd64,linux/arm64
           push: true
-          tags: ${{ vars.DOCKERHUB_NAMESPACE }}/python:3.12
+          tags: ${{ vars.DOCKERHUB_NAMESPACE }}/fastapi:0.104
