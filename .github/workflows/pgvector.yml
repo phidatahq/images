@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  build-pg-vector-16:
+  build-pg-vector-images:
 
     runs-on: ubuntu-latest
 
@@ -22,10 +22,21 @@ jobs:
         with:
           username: ${{ secrets.DOCKERHUB_USERNAME }}
           password: ${{ secrets.DOCKERHUB_TOKEN }}
-      - name: Build and push
+      - name: Discover and Build Images
+        run: |
+            cd pgvector
+            for dir in */; do
+              # Extract version from the directory name
+              version=${dir%/}
+
+              echo "Building and pushing image for PG Vector $version"
+
+              # Build and push the Docker image for this version
+              docker buildx build \
+                --platform linux/amd64,linux/arm64 \
+                --push \
+                --tag ${{ vars.DOCKERHUB_NAMESPACE }}/pgvector:$version \
+                --file "$dir/Dockerfile" \
+                "$dir"
+            done
         uses: docker/build-push-action@v6
-        with:
-          context: ./pgvector/16/
-          platforms: linux/amd64,linux/arm64
-          push: true
-          tags: ${{ vars.DOCKERHUB_NAMESPACE }}/pgvector:16

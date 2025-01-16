@@ -6,7 +6,7 @@ permissions:
   contents: read
 
 jobs:
-  build-python-3-12:
+  build-python-images:
 
     runs-on: ubuntu-latest
 
