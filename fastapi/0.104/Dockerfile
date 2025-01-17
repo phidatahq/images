@@ -1,5 +1,5 @@
-FROM phidata/python:3.11.5
-LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
+FROM agnohq/python:3.12
+LABEL maintainer="Ashpreet Bedi <ashpreet@agno.com>"
 
 # Create user and home dir
 ARG USER=app

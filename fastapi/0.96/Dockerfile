@@ -1,4 +1,5 @@
-FROM phidata/python:3.9.12
+FROM agnohq/python:3.12
+LABEL maintainer="Ashpreet Bedi <ashpreet@agno.com>"
 
 ARG USER=app
 ARG APP_DIR=${USER_LOCAL_DIR}/${USER}
