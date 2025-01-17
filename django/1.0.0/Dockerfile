@@ -1,4 +1,4 @@
-FROM agno/python:3.12
+FROM agnohq/python:3.12
 LABEL maintainer="Ashpreet Bedi <ashpreet@agno.com>"
 
 # Define user and application directory

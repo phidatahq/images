@@ -1,5 +1,5 @@
 FROM python:3.11.5-slim
-LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
+LABEL maintainer="Ashpreet Bedi <ashpreet@agno.com>"
 
 ARG TMP_DIR=/tmp
 ARG MNT_DIR=/mnt

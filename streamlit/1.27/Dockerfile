@@ -1,4 +1,4 @@
-FROM phidata/python:3.11.5
+FROM agnohq/python:3.11.5
 LABEL maintainer="Ashpreet Bedi <ashpreet@phidata.com>"
 
 # Create user and home dir
